@@ -47,15 +47,18 @@ with app.app_context():
         request_data = request.get_json()
         if request_data:
             if request_data["Method"] in method_dict.keys():
-                pandas_df = helpers.change_str_to_int_values(pd.DataFrame(request_data["Data"], index=1))[features]
-                result = method_dict["Method"](pandas_df)
+                pandas_df = helpers.change_str_to_int_values(pd.DataFrame(request_data["Data"], index=(1, )))[features]
                 if request_data["Method"] == "mnn":
-                    result = round(result * 50)
+                    pandas_df = pandas_df.values.reshape(1, 1, 6)
+                result = method_dict[request_data["Method"]](pandas_df)
+                if request_data["Method"] == "mnn":
+                    result = round(float(result) * 50)
                 # logging a work process
                 lg.info(f"Recomendation: Method={request_data['Method']}: "
                         f"UserID={request_data['UserID']}: Result={result}: Datetime_={str(datetime.now())}")
                 # Returning the created task as a JSON response
-                return jsonify({"UseID": request_data['UserID'], "Result": result, "Datetime": str(datetime.now())}), 201
+                return jsonify({"UseID": request_data['UserID'], "Result": "Game_" + str(int(result)),
+                                "Datetime": str(datetime.now())}), 201
         else:
             # Error message, task was now found
             lg.error(f'Something went wrong!!!')
