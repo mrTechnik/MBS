@@ -1,0 +1,6 @@
+program: MBS_Test
+path_to_source: 'src\_0_source\ml_test_rec_sys.parquet'
+
+is_draw_basic_stats: False
+
+correlation_coef: 0.005
